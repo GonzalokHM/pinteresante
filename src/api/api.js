@@ -1,9 +1,9 @@
-const ACCESS_KEY = 'ACCESS_KEYI'
-
-export const fetchImages = async (query) => {
-  const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
+export const fetchImages = async (query, page, perPage = 14) => {
+  // perPage = 12
+  const url = `https://api.unsplash.com/search/photos?page=${page}&per_page=${perPage}&query=${encodeURIComponent(
+    // &per_page=${perPage}
     query
-  )}&client_id=${ACCESS_KEY}`
+  )}&client_id=${import.meta.env.VITE_ACCESS_KEY}`
 
   try {
     const response = await fetch(url)
@@ -12,6 +12,6 @@ export const fetchImages = async (query) => {
     return data
   } catch (error) {
     console.error('Error en fetchImages:', error)
-    return { results: [] }
+    return { results: [], total_pages: 0 }
   }
 }
