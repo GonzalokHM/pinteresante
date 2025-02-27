@@ -17,21 +17,30 @@ const debounce = (func, delay) => {
   }
 }
 
+let lastFetchTime = 0
+
 const handleScroll = debounce(() => {
   if (isFetching) return
-  const { scrollTop, clientHeight, scrollHeight } = document.documentElement
-  if (
-    scrollTop + clientHeight >= scrollHeight - 50 &&
-    currentPage < totalPages
-  ) {
-    console.log('fetch Launched')
-    isFetching = true
-    loadImages(currentWord, currentPage + 1, false).then((data) => {
-      currentPage += 1
-      totalPages = data.total_pages
-      isFetching = false
-    })
-  }
+  requestAnimationFrame(() => {
+    const { scrollTop, clientHeight, scrollHeight } = document.documentElement
+    const now = Date.now()
+
+    if (
+      scrollTop + clientHeight >= scrollHeight - 150 &&
+      currentPage < totalPages &&
+      now - lastFetchTime > 1000
+    ) {
+      console.log('Fetching more images...')
+      isFetching = true
+      lastFetchTime = now
+
+      loadImages(currentWord, currentPage + 1, false).then((data) => {
+        currentPage += 1
+        totalPages = data.total_pages
+        isFetching = false
+      })
+    }
+  })
 }, 300)
 
 window.addEventListener('scroll', handleScroll)
