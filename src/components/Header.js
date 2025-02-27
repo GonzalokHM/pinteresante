@@ -1,6 +1,6 @@
 let homeLink
 
-export const createHeader = (onSearch, onReset) => {
+export const Header = (onSearch, onReset, app) => {
   const header = document.createElement('header')
   header.className = 'header'
 
@@ -100,7 +100,7 @@ export const createHeader = (onSearch, onReset) => {
 
   header.appendChild(headerRight)
 
-  return header
+  app.appendChild(header)
 }
 
 export const setHeaderActive = (isActive) => {

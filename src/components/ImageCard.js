@@ -1,4 +1,4 @@
-export const createImageCard = (imageData, index = 0) => {
+export const ImageCard = (parent, imageData) => {
   const card = document.createElement('div')
   card.className = 'image-card'
 
@@ -8,10 +8,22 @@ export const createImageCard = (imageData, index = 0) => {
 
   const img = document.createElement('img')
   img.className = 'Photo'
-  const variants = ['small', 'thumb', 'regular']
-  const variant = index < variants.length ? variants[index] : 'small'
-  img.src = imageData.urls[variant] || imageData.urls.small
+  img.src = imageData.urls.small
   img.alt = imageData.alt_description || 'Imagen'
+  img.loading = 'lazy'
+
+  img.onload = () => {
+    requestAnimationFrame(() => {
+      const imageHeight = img.getBoundingClientRect().height
+      const rowHeight = 10
+      let rowSpan = Math.round(imageHeight / rowHeight)
+
+      rowSpan = rowSpan < 1 ? 1 : rowSpan
+      rowSpan = rowSpan > 35 ? 35 : rowSpan
+      card.style.gridRowEnd = `span ${rowSpan}`
+    })
+  }
+
   photoContainer.appendChild(img)
 
   const overlay = document.createElement('div')
@@ -55,9 +67,8 @@ export const createImageCard = (imageData, index = 0) => {
 
   const userImg = document.createElement('img')
   userImg.className = 'user-Image'
-  userImg.src = imageData.user.profile_image.small
+  userImg.src = imageData.user.profile_image.medium
   userImg.alt = imageData.user.name
-  console.log(imageData)
   userImg.style.border = `5px solid ${imageData.color}`
 
   userDiv.appendChild(userImg)
@@ -77,5 +88,5 @@ export const createImageCard = (imageData, index = 0) => {
 
   card.appendChild(userDiv)
 
-  return card
+  parent.appendChild(card)
 }

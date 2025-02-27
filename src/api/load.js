@@ -1,20 +1,27 @@
-import { appendImageGrid, clearImageGrid } from '../components/ImageGrid'
-import { fetchImages } from './api'
+import { printImages } from '../utils/print'
+import fetchImages from './fetch'
 
-const loadImages = async (query, page, clear = false) => {
-  const data = await fetchImages(query, page)
-  if (page === 1 && data.results.length === 0) {
-    alert(
-      "🙀No se encontraron resultados. Mostrando imágenes de 🐈‍⬛😼🐈'. Intenta con 'funny'  ."
-    )
-    currentQuery = 'gatos'
-    return loadImages(currentQuery, 1, true)
+const loadImages = async (word, page, clear = false) => {
+  try {
+    const data = await fetchImages(word, page)
+
+    if (data.results.length === 0 && page === 1) {
+      alert(
+        "🙀No se encontraron resultados. Acepta para ver imágenes de 🐈‍⬛😼🐈'. Intenta con 'funny'  ."
+      )
+      return loadImages('cats', 1, true)
+    }
+
+    if (clear) {
+      document.querySelector('.grid-container').innerHTML = ''
+    }
+
+    printImages(data.results)
+    return data
+  } catch (error) {
+    console.error('Error al cargar imágenes:', error)
+    return { results: [], total_pages: 0 }
   }
-  if (clear) {
-    clearImageGrid()
-  }
-  appendImageGrid(data.results)
-  return data
 }
 
 export default loadImages

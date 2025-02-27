@@ -1,56 +1,62 @@
 import loadImages from './api/load.js'
-import { createHeader, setHeaderActive } from './components/Header.js'
-import { createImageGrid } from './components/ImageGrid.js'
+import { Header, setHeaderActive } from './components/Header.js'
 import './style.css'
 
 const app = document.getElementById('app')
 
 let currentPage = 1
 let totalPages = 1
-let currentQuery = 'nature'
+let currentWord = 'nature'
+let isFetching = false
 
-const handleScroll = () => {
-  const { scrollTop, clientHeight, scrollHeight } = document.documentElement
-
-  if (scrollTop + clientHeight >= scrollHeight - 5) {
-    if (currentPage < totalPages) {
-      loadImages(currentQuery, currentPage + 1, false).then((data) => {
-        currentPage += 1
-        totalPages = data.total_pages
-      })
-    }
+const debounce = (func, delay) => {
+  let timeout
+  return (...args) => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), delay)
   }
 }
 
+const handleScroll = debounce(() => {
+  if (isFetching) return
+  const { scrollTop, clientHeight, scrollHeight } = document.documentElement
+  if (
+    scrollTop + clientHeight >= scrollHeight - 50 &&
+    currentPage < totalPages
+  ) {
+    console.log('fetch Launched')
+    isFetching = true
+    loadImages(currentWord, currentPage + 1, false).then((data) => {
+      currentPage += 1
+      totalPages = data.total_pages
+      isFetching = false
+    })
+  }
+}, 300)
+
 window.addEventListener('scroll', handleScroll)
 
-const handleSearch = (query) => {
+const handleSearch = async (word) => {
   currentPage = 1
-  currentQuery = query
-  loadImages(query, 1, true).then((data) => {
-    currentPage = 1
-    totalPages = data.total_pages
-  })
+  currentWord = word
+  const data = await loadImages(word, 1, true)
+  totalPages = data.total_pages
   setHeaderActive(false)
 }
 
-const resetPage = () => {
+const resetPage = async () => {
   currentPage = 1
-  currentQuery = 'nature'
-  loadImages('nature', 1, true).then((data) => {
-    currentPage = 1
-    totalPages = data.total_pages
-  })
+  currentWord = 'nature'
+  const data = await loadImages('nature', 1, true)
+  totalPages = data.total_pages
   setHeaderActive(true)
 }
 
-const header = createHeader(handleSearch, resetPage)
-app.appendChild(header)
-
-const imageGrid = createImageGrid()
-app.appendChild(imageGrid)
+Header(handleSearch, resetPage, app)
+const gridContainer = document.createElement('div')
+gridContainer.className = 'grid-container'
+app.appendChild(gridContainer)
 
 loadImages('nature', 1, true).then((data) => {
-  currentPage = 1
   totalPages = data.total_pages
 })
