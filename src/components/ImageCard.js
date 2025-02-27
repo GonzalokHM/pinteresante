@@ -18,10 +18,11 @@ export const ImageCard = (parent, imageData) => {
       const rowHeight = 10
       let rowSpan = Math.round(imageHeight / rowHeight)
 
-      rowSpan = rowSpan < 1 ? 1 : rowSpan
-      rowSpan = rowSpan > 35 ? 35 : rowSpan
+      rowSpan = Math.max(1, Math.min(rowSpan, 35))
+
       card.style.gridRowEnd = `span ${rowSpan}`
     })
+    card.classList.add('loaded')
   }
 
   photoContainer.appendChild(img)

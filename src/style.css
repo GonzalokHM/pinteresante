@@ -153,6 +153,17 @@ body {
   flex-direction: column;
 }
 
+.image-card {
+  opacity: 0;
+  filter: blur(10px);
+  transition: opacity 0.5s ease-out, filter 0.5s ease-out;
+}
+
+.image-card.loaded {
+  opacity: 1;
+  filter: blur(0);
+}
+
 .photo-container {
   position: relative;
 }
@@ -261,7 +272,7 @@ body {
     grid-template-columns: repeat(6, 1fr);
   }
 }
-@media (min-width: 900px) and (max-width: 1299px) {
+@media (min-width: 900px) and (max-width: 1200px) {
   .grid-container {
     grid-template-columns: repeat(4, 1fr);
   }
