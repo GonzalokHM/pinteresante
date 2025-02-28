@@ -1,13 +1,16 @@
 import loadImages from './api/load.js'
 import { Header, setHeaderActive } from './components/Header.js'
 import './style.css'
+import { printImages } from './utils/print.js'
 
 const app = document.getElementById('app')
 
 let currentPage = 1
 let totalPages = 1
 let currentWord = 'nature'
+const initialQuery = 'nature'
 let isFetching = false
+let cachedInitialData = null
 
 const debounce = (func, delay) => {
   let timeout
@@ -53,12 +56,15 @@ const handleSearch = async (word) => {
   setHeaderActive(false)
 }
 
-const resetPage = async () => {
-  currentPage = 1
-  currentWord = 'nature'
-  const data = await loadImages('nature', 1, true)
-  totalPages = data.total_pages
-  setHeaderActive(true)
+export const resetPage = () => {
+  if (cachedInitialData) {
+    document.querySelector('.grid-container').innerHTML = ''
+    printImages(cachedInitialData.results)
+    totalPages = cachedInitialData.total_pages
+    setHeaderActive(true)
+  } else {
+    console.log('error al guardar cachedInitialData', cachedInitialData)
+  }
 }
 
 Header(handleSearch, resetPage, app)
@@ -66,6 +72,7 @@ const gridContainer = document.createElement('div')
 gridContainer.className = 'grid-container'
 app.appendChild(gridContainer)
 
-loadImages('nature', 1, true).then((data) => {
+loadImages(initialQuery, 1, true).then((data) => {
   totalPages = data.total_pages
+  cachedInitialData = data
 })

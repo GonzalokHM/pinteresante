@@ -1,109 +1,58 @@
-let homeLink
-
 export const Header = (onSearch, onReset, app) => {
-  const header = document.createElement('header')
-  header.className = 'header'
+  app.innerHTML = `
+    <header class="header">
+      <div class="header-left">
+        <img class="pinterest-logo" src="/pinterest-icon.png" alt="Pinterest" style="cursor: pointer;">
+        <nav class="nav-links">
+          <a class="nav-link active" href="#" id="homeLink">Inicio</a>
+          <a class="nav-link" href="#">Explorar</a>
+          <a class="nav-link" href="#">Crear</a>
+        </nav>
+      </div>
+      <div class="header-center">
+        <form class="search-form">
+          <button type="submit">
+            <img src="/search-icon.png" alt="search" class="search-icon">
+          </button>
+          <input type="text" placeholder="Buscar">
+        </form>
+      </div>
+      <div class="header-right">
+        <button class="icon-button">
+          <img src="/bell.png" alt="Notificaciones">
+        </button>
+        <button class="icon-button">
+          <img src="/chat.png" alt="Chat">
+        </button>
+        <button class="icon-button profile-button">D</button>
+      </div>
+    </header>
+  `
 
-  // === Sección izquierda: Logo y navegación ===
-  const headerLeft = document.createElement('div')
-  headerLeft.className = 'header-left'
-
-  const logo = document.createElement('img')
-  logo.className = 'pinterest-logo'
-  logo.src = '/pinterest-icon.png'
-  logo.alt = 'Pinterest'
-  logo.style.cursor = 'pointer'
+  const logo = app.querySelector('.pinterest-logo')
   logo.addEventListener('click', onReset)
-  headerLeft.appendChild(logo)
 
-  const nav = document.createElement('nav')
-  nav.className = 'nav-links'
-
-  const links = [
-    { text: 'Inicio', href: '#' },
-    { text: 'Explorar', href: '#' },
-    { text: 'Crear', href: '#' }
-  ]
-
-  links.forEach((linkData) => {
-    const a = document.createElement('a')
-    a.className = 'nav-link'
-    a.textContent = linkData.text
-    a.href = linkData.href
-    if (linkData.text === 'Inicio') {
-      a.classList.add('active')
-      homeLink = a
-    }
-    nav.appendChild(a)
+  const homeLink = app.querySelector('#homeLink')
+  homeLink.addEventListener('click', (e) => {
+    e.preventDefault()
+    onReset()
+    setHeaderActive(true)
   })
-  headerLeft.appendChild(nav)
-  header.appendChild(headerLeft)
 
-  // === Sección central: Buscador ===
-  const headerCenter = document.createElement('div')
-  headerCenter.className = 'header-center'
-
-  const form = document.createElement('form')
-  form.className = 'search-form'
+  const form = app.querySelector('.search-form')
   form.addEventListener('submit', (e) => {
     e.preventDefault()
-    const input = e.target.querySelector('input')
+    const input = form.querySelector('input')
     const query = input.value.trim()
     if (query) {
       onSearch(query)
     }
     input.value = ''
   })
-
-  const button = document.createElement('button')
-  button.type = 'submit'
-  button.textContent = ''
-
-  const searchIcon = document.createElement('img')
-  searchIcon.src = '/search-icon.png'
-  searchIcon.alt = 'search'
-  searchIcon.className = 'search-icon'
-  button.appendChild(searchIcon)
-  form.appendChild(button)
-
-  const input = document.createElement('input')
-  input.type = 'text'
-  input.placeholder = 'Buscar'
-  form.appendChild(input)
-  headerCenter.appendChild(form)
-  header.appendChild(headerCenter)
-
-  // === Sección derecha: Iconos de notificaciones, chat y perfil ===
-  const headerRight = document.createElement('div')
-  headerRight.className = 'header-right'
-
-  const bellButton = document.createElement('button')
-  bellButton.className = 'icon-button'
-  const bellImg = document.createElement('img')
-  bellImg.src = '/bell.png'
-  bellImg.alt = 'Notificaciones'
-  bellButton.appendChild(bellImg)
-  headerRight.appendChild(bellButton)
-
-  const chatButton = document.createElement('button')
-  chatButton.className = 'icon-button'
-  const chatImg = document.createElement('img')
-  chatImg.src = '/chat.png'
-  chatImg.alt = 'Chat'
-  chatButton.appendChild(chatImg)
-  headerRight.appendChild(chatButton)
-
-  const profileButton = document.createElement('button')
-  profileButton.className = 'icon-button profile-button'
-  profileButton.textContent = 'D'
-  headerRight.appendChild(profileButton)
-
-  header.appendChild(headerRight)
-
-  app.appendChild(header)
 }
 
 export const setHeaderActive = (isActive) => {
+  const homeLink = document.getElementById('homeLink')
   if (homeLink) {
     if (isActive) {
       homeLink.classList.add('active')
